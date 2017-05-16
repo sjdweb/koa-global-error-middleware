@@ -4,7 +4,13 @@ module.exports = function () {
       await next();
     } catch (err) {
       ctx.status = err.statusCode || err.status || 500;
-      ctx.body = err.error || err.message || 'Internal server error';
+
+      let errorToApply = err.error || err.message;
+      if (typeof errorToApply === 'string') {
+        errorToApply = { error: errorToApply };
+      }
+
+      ctx.body = errorToApply || 'Internal server error';
       ctx.app.emit('error', err, ctx);
     }
   };
